@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs'
 import { prisma } from '../config/prisma.ts'
-import { Prisma } from '../generated/prisma/client.ts'
+import { Prisma } from '@prisma/client'
 import { AppError } from '../utils/AppError.ts'
 import { toPublicUser, type PublicUser } from './authService.ts'
 import type {
