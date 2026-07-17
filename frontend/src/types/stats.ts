@@ -5,9 +5,3 @@ export interface SiteStats {
   statesCovered: number
   updatedAt: string
 }
-
-export interface SiteStatsInput {
-  vehiclesSold?: number
-  dealersCount?: number
-  statesCovered?: number
-}

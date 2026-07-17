@@ -10,3 +10,6 @@ dist
 # SQLite data file — migrations are committed, the data itself is not
 *.db
 *.db-journal
+
+# User-uploaded product images (runtime data, not source)
+/uploads

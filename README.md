@@ -1,17 +1,22 @@
 # EPOWER Vehicles
 
-Website and admin backend for EPOWER Vehicles Pvt Ltd — an EV manufacturer offering E-Rickshaws,
-E-Loaders, E-Dumpers, E-Scooters, E-Carts, and E-Autos. Dark theme with neon-green accents, soft
-per-section gradient themes, and WhatsApp-first enquiries alongside the backend-managed contact
-flow.
+Public website for EPOWER Vehicles Pvt Ltd — an EV manufacturer offering E-Rickshaws, E-Loaders,
+E-Dumpers, E-Scooters, E-Carts, and E-Autos. Premium dark theme with neon-green accents,
+glassmorphism cards, and Framer Motion animations, following the approved design reference
+(`import-custom-45846873.figma.site`). WhatsApp-first enquiries alongside backend-persisted
+Contact/Dealership/Sales-Partner submissions.
+
+**No admin UI lives in this repo.** The backend exposes full REST APIs (with pagination,
+filtering, search, and sorting) meant to be consumed by a separate external admin dashboard, using
+the same JWT auth this API has always had.
 
 This is an npm workspaces monorepo:
 
 ```
 epowervehicles/
-├── frontend/   React 19 + TypeScript + Vite + Tailwind CSS v4 — the public site + admin panel
-├── backend/    Express + TypeScript + Prisma/SQLite — auth, products, leads, messages API
-├── docs/       API.md — endpoint reference and deployment notes
+├── frontend/   React 19 + TypeScript + Vite + Tailwind CSS v4 + Framer Motion — the public site
+├── backend/    Express + TypeScript + Prisma/SQLite — auth + full REST APIs for an external dashboard
+├── docs/       API.md — endpoint reference (query params, pagination, deployment notes)
 └── .github/    GitHub Actions workflow that deploys frontend/ to GitHub Pages
 ```
 
@@ -19,34 +24,45 @@ epowervehicles/
 
 ```
 src/
-├── assets/        self-hosted images
+├── assets/        self-hosted images (logo)
 ├── components/
-│   ├── layout/    Navbar (dark theme, real mobile hamburger menu), Footer, Layout, AdminLayout
+│   ├── layout/    Navbar (Home/Products/Dealership/Join as Sales Partner/About Us/Chat-Enquire),
+│   │              Footer, Layout
 │   ├── ui/        Button, Input, Textarea, Select, Spinner, EmptyState, ErrorState, Card,
-│   │              WhatsAppButton — the 7 form/state atoms take an additive `tone: 'light'|'dark'`
-│   │              prop (default 'light') so the admin panel keeps its own separate light theme
-│   ├── icons/     hand-drawn inline SVG icons (form field icons, WhatsApp) — no icon-library dep
-│   └── sections/  Hero, GradientSection (the 4 gradient section themes), StatsBand, FeatureGrid,
-│                  ProductCard, ValueBox, RevealOnScroll (scroll-in animation), …
-├── pages/         Home, About, Products, Dealership, Contact, SalesPartner, admin/*
+│   │              WhatsAppButton (solid/inverted variants for use on light vs dark backgrounds)
+│   ├── icons/     hand-drawn inline SVGs — form fields, WhatsApp, bank/finance, and a
+│   │              per-category VehicleIcons set used as the product image placeholder whenever a
+│   │              product has no photo — no icon-library dependency
+│   └── sections/  Hero, SectionGlow (soft glow + grid texture, used sparingly), FeaturedProduct,
+│                  HappyCustomers (animated stat counters + testimonials), FinancePartners,
+│                  ProductCard (category-accent gradient border), FeatureGrid, RevealOnScroll
+│                  (Framer Motion whileInView entrance animation), …
+├── pages/         Home, About, Products, Dealership, Contact, SalesPartner
 ├── forms/         ContactForm, DealershipForm, SalesPartnerForm + zod schemas (react-hook-form)
-├── hooks/         useAuth, useInView, useDocumentTitle, and TanStack Query hooks per API resource
-├── services/      typed fetch wrapper + one module per API resource
-├── context/       AuthContext (silent session restore via httpOnly refresh cookie)
-├── router/        route definitions, lazy-loaded pages, ProtectedRoute for /admin/*
+├── hooks/         useDocumentTitle, useFeaturedProduct, and a TanStack Query hook per public
+│                  GET/POST the frontend actually calls
+├── services/      typed fetch wrapper + one module per API resource (read/submit only — no
+│                  create/update/delete calls live here, that's the external dashboard's job)
+├── router/        route definitions, lazy-loaded pages (no protected routes — public-only app)
 ├── utils/         whatsapp.ts — builds prefilled wa.me links
 └── types/         shared DTO types mirroring the backend
 ```
 
-Public pages (Home, About, Products, Dealership, Contact, and the new Sales Partner page) use a
-dark theme with neon-green accents and soft per-section gradients (yellow=hero, orange=range,
-red=CTA, green=benefits). Products are served from the backend, and the Contact/Dealership forms
-submit to the backend (with validation, loading states, and toast notifications) — WhatsApp is
-offered alongside as a fast-path, not a replacement. The Sales Partner form is WhatsApp-only by
-design: it validates, then opens a prefilled `wa.me` link and shows a success banner. `/admin` is a
-protected panel (JWT login, kept on the original light theme) for managing products (incl. the new
-categories and an optional per-product spec line), dealership leads, contact messages, and the
-Home page's stats band numbers.
+Every public page (Home, About, Products, Dealership, Contact, Sales Partner) uses the same dark/
+neon-green system: near-black backgrounds throughout, one soft lime glow behind the hero/page
+headers (`SectionGlow`), and color variety expressed narrowly via a gradient accent bar per product
+category (green/orange/red/amber/cyan/purple) rather than large flat-colored section washes.
+Products, Contact messages, Dealership/Sales-Partner applications, and the About page's entire
+content are all served from the backend — nothing is hardcoded. The Home page leads with a premium
+hero (headline, CTAs, trust badges, a compact featured-vehicle glass card — no large static hero
+image), followed immediately by a full **Featured Product** section (image, description, range/
+capacity/charge-time stat boxes, Enquire + WhatsApp), the product range, "Why EPOWER", **Happy
+Customers** (animated stats + sample testimonials — clearly placeholder until real ones are added),
+**Finance Partners** (placeholder logo cards), and a solid neon CTA band. The Products page groups
+every product by category (E-Rickshaw/E-Loader/E-Dumper/E-Scooter/E-Cart/E-Auto/Custom) rather than
+one flat grid. Products with no photo render a local per-category SVG icon instead of a broken
+image or a fabricated stock photo — setting a real image later (via the external dashboard's
+upload/URL) swaps it in automatically, no code change.
 
 ## Backend (`backend/`)
 
@@ -55,16 +71,22 @@ src/
 ├── config/       zod-validated env, Prisma client (SQLite via better-sqlite3 adapter)
 ├── controllers/  request/response glue — thin, delegate to services
 ├── services/     business logic + Prisma queries
-├── middleware/   authenticate, requireRole, validate (zod), rateLimiter, errorHandler
+├── middleware/   authenticate, requireRole, validate (zod), rateLimiter, errorHandler, upload (multer)
 ├── validators/   zod schemas per resource
 ├── routes/       one router per resource, mounted under /api
-└── utils/        logger (pino), AppError, JWT helpers
+└── utils/        logger (pino), AppError, JWT helpers, listQuery.ts (shared pagination/sort/search parsing)
 prisma/
-├── schema.prisma User / Product / DealershipApplication / ContactMessage / SiteStats
-└── seed.ts       creates the admin user, the 4 original products, and a zeroed SiteStats row
+├── schema.prisma User / Product / DealershipApplication / ContactMessage / SiteStats /
+│                 SalesPartnerApplication / AboutContent
+└── seed.ts       admin user, 7 starter products (one per category, marked E-Rickshaw as featured),
+                  starter SiteStats/About content matching the design reference
+uploads/          admin-uploaded product images (gitignored — runtime data, like dev.db)
 ```
 
-See [`docs/API.md`](docs/API.md) for the full endpoint reference.
+See [`docs/API.md`](docs/API.md) for the full endpoint + query-parameter reference. Products,
+Contact Messages, Dealership Applications, and Sales Partner Applications all support
+`GET`/`GET :id`/`POST`/`PUT`/`PATCH`/`DELETE` with `page`/`pageSize`/`sortBy`/`sortOrder`/`search`
+on their list endpoints — built for an external dashboard to consume directly.
 
 ## Getting started
 
@@ -72,13 +94,14 @@ See [`docs/API.md`](docs/API.md) for the full endpoint reference.
 npm install                       # installs both workspaces
 cp backend/.env.example backend/.env   # then fill in JWT secrets + ADMIN_PASSWORD
 npm run --workspace backend prisma:migrate  # creates backend/dev.db
-npm run --workspace backend seed            # admin user + starter products
+npm run --workspace backend seed            # admin user + starter products/content
 
 npm run dev:backend               # http://localhost:4000
 npm run dev:frontend              # http://localhost:5173
 ```
 
-Log into `/admin/login` with the `ADMIN_EMAIL` / `ADMIN_PASSWORD` you set in `backend/.env`.
+The `ADMIN_EMAIL` / `ADMIN_PASSWORD` you set in `backend/.env` are for your external dashboard to
+log in with via `POST /api/auth/login` — there's no login page in this repo.
 
 ## Scripts (root)
 

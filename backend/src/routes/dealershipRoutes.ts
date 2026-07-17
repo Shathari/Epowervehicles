@@ -5,6 +5,7 @@ import { requireRole } from '../middleware/requireRole.ts'
 import { validateBody } from '../middleware/validate.ts'
 import {
   createDealershipApplicationSchema,
+  replaceDealershipApplicationSchema,
   updateDealershipApplicationSchema,
 } from '../validators/dealershipValidators.ts'
 import { submissionRateLimiter } from '../middleware/rateLimiter.ts'
@@ -17,6 +18,14 @@ dealershipRouter.post(
   submissionRateLimiter,
   validateBody(createDealershipApplicationSchema),
   dealershipController.create,
+)
+dealershipRouter.get('/:id', authenticate, requireRole('ADMIN'), dealershipController.getById)
+dealershipRouter.put(
+  '/:id',
+  authenticate,
+  requireRole('ADMIN'),
+  validateBody(replaceDealershipApplicationSchema),
+  dealershipController.replace,
 )
 dealershipRouter.patch(
   '/:id',

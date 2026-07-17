@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useInView } from '@/hooks/useInView'
+import { motion } from 'framer-motion'
 
 interface RevealOnScrollProps {
   children: ReactNode
@@ -8,16 +8,15 @@ interface RevealOnScrollProps {
 }
 
 export function RevealOnScroll({ children, className = '', delayMs = 0 }: RevealOnScrollProps) {
-  const { ref, isInView } = useInView<HTMLDivElement>()
-
   return (
-    <div
-      ref={ref}
-      style={{ transitionDelay: `${delayMs}ms` }}
-      className={`transform transition-all duration-700 ease-out
-        ${isInView ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'} ${className}`}
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.6, ease: 'easeOut', delay: delayMs / 1000 }}
     >
       {children}
-    </div>
+    </motion.div>
   )
 }

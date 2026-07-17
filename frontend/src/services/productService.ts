@@ -1,18 +1,12 @@
 import { apiRequest } from '@/services/apiClient'
-import type { Product, ProductInput } from '@/types/product'
+import type { Paginated } from '@/types/api'
+import type { Product } from '@/types/product'
 
-export function listProducts(): Promise<Product[]> {
-  return apiRequest<Product[]>('/products')
+export function listProducts(params?: { pageSize?: number }): Promise<Paginated<Product>> {
+  const pageSize = params?.pageSize ?? 100
+  return apiRequest<Paginated<Product>>(`/products?pageSize=${pageSize}`)
 }
 
-export function createProduct(input: ProductInput): Promise<Product> {
-  return apiRequest<Product>('/products', { method: 'POST', body: input })
-}
-
-export function updateProduct(id: string, input: Partial<ProductInput>): Promise<Product> {
-  return apiRequest<Product>(`/products/${id}`, { method: 'PATCH', body: input })
-}
-
-export function deleteProduct(id: string): Promise<null> {
-  return apiRequest<null>(`/products/${id}`, { method: 'DELETE' })
+export function getFeaturedProduct(): Promise<Product | null> {
+  return apiRequest<Product | null>('/products/featured')
 }

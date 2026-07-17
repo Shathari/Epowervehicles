@@ -1,18 +1,19 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import logo from '@/assets/logo.webp'
+import { WhatsAppButton } from '@/components/ui/WhatsAppButton'
 
 const navItems = [
   { to: '/', label: 'Home' },
-  { to: '/about', label: 'About' },
   { to: '/products', label: 'Products' },
   { to: '/dealership', label: 'Dealership' },
-  { to: '/sales-partner', label: 'Sales Partner' },
-  { to: '/contact', label: 'Contact' },
+  { to: '/sales-partner', label: 'Join as Sales Partner' },
+  { to: '/about', label: 'About Us' },
+  { to: '/contact', label: 'Chat/Enquire' },
 ]
 
 function navLinkClass({ isActive }: { isActive: boolean }) {
-  return `rounded px-3 py-2 text-base font-bold transition-colors hover:bg-white/5 ${
+  return `rounded px-3 py-2 text-sm font-bold transition-colors hover:bg-white/5 ${
     isActive ? 'text-neon-400' : 'text-slate-200'
   }`
 }
@@ -22,12 +23,12 @@ export function Navbar() {
 
   return (
     <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-ink-950/95 backdrop-blur">
-      <div className="mx-auto flex h-[60px] max-w-6xl items-center justify-between px-4">
+      <div className="mx-auto flex h-[64px] max-w-7xl items-center justify-between px-4">
         <NavLink to="/" className="flex items-center" onClick={() => setIsMenuOpen(false)}>
           <img src={logo} alt="EPOWER Vehicles" className="h-10 w-auto" />
         </NavLink>
 
-        <nav className="hidden md:block" aria-label="Primary">
+        <nav className="hidden lg:block" aria-label="Primary">
           <ul className="flex items-center gap-1">
             {navItems.map((item) => (
               <li key={item.to}>
@@ -39,9 +40,17 @@ export function Navbar() {
           </ul>
         </nav>
 
+        <div className="hidden lg:block">
+          <WhatsAppButton
+            message="Hi EPOWER Vehicles, I'd like to know more about your electric vehicles."
+            label="WhatsApp Us"
+            compact
+          />
+        </div>
+
         <button
           type="button"
-          className="flex h-10 w-10 items-center justify-center rounded md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded lg:hidden"
           aria-expanded={isMenuOpen}
           aria-controls="mobile-nav"
           aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
@@ -70,7 +79,7 @@ export function Navbar() {
       <nav
         id="mobile-nav"
         aria-label="Mobile"
-        className={`overflow-hidden border-t border-white/10 bg-ink-950 transition-[max-height] duration-300 ease-in-out md:hidden ${
+        className={`overflow-hidden border-t border-white/10 bg-ink-950 transition-[max-height] duration-300 ease-in-out lg:hidden ${
           isMenuOpen ? 'max-h-96' : 'max-h-0'
         }`}
       >

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import toast from 'react-hot-toast'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Select } from '@/components/ui/Select'
@@ -16,6 +17,7 @@ import {
 } from '@/components/icons/FormIcons'
 import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon'
 import { openWhatsApp } from '@/utils/whatsapp'
+import { useSubmitSalesPartnerApplication } from '@/hooks/useSalesPartnerApplications'
 import {
   INDIAN_STATES,
   SALES_EXPERIENCE_OPTIONS,
@@ -45,8 +47,16 @@ export function SalesPartnerForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SalesPartnerFormValues>({ resolver: zodResolver(salesPartnerFormSchema) })
+  const submitApplication = useSubmitSalesPartnerApplication()
 
-  const onSubmit = (values: SalesPartnerFormValues) => {
+  const onSubmit = async (values: SalesPartnerFormValues) => {
+    try {
+      await submitApplication.mutateAsync(values)
+    } catch {
+      // The WhatsApp handoff below is the primary flow — don't block it on a backend hiccup,
+      // just let the admin know the record may not have been saved.
+      toast.error("Couldn't save your application, but continuing to WhatsApp…")
+    }
     openWhatsApp(buildMessage(values))
     setSubmitted(true)
   }

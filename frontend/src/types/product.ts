@@ -6,20 +6,14 @@ export interface Product {
   name: string
   category: ProductCategory
   description: string
-  imageUrl: string
+  imageUrl?: string | null
   specLine?: string | null
+  rangeText?: string | null
+  capacityText?: string | null
+  chargeTimeText?: string | null
+  isFeatured: boolean
   order: number
   isActive: boolean
   createdAt: string
   updatedAt: string
-}
-
-export interface ProductInput {
-  name: string
-  category: ProductCategory
-  description: string
-  imageUrl: string
-  specLine?: string
-  order?: number
-  isActive?: boolean
 }

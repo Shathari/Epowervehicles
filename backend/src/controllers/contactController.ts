@@ -2,12 +2,20 @@ import type { Request, Response } from 'express'
 import * as contactService from '../services/contactService.ts'
 import { notifyNewSubmission } from '../services/mailService.ts'
 import { ok } from '../utils/respond.ts'
-import type { CreateContactMessageInput } from '../validators/contactValidators.ts'
+import type {
+  CreateContactMessageInput,
+  ReplaceContactMessageInput,
+} from '../validators/contactValidators.ts'
 import type { MessageStatus } from '../types.ts'
 
-export async function list(_req: Request, res: Response) {
-  const messages = await contactService.listContactMessages()
-  ok(res, messages)
+export async function list(req: Request, res: Response) {
+  const { items, meta } = await contactService.listContactMessages(req.query)
+  ok(res, { items, ...meta })
+}
+
+export async function getById(req: Request<{ id: string }>, res: Response) {
+  const message = await contactService.getContactMessageById(req.params.id)
+  ok(res, message)
 }
 
 export async function create(
@@ -24,6 +32,14 @@ export async function create(
   ])
 
   ok(res, message, 201)
+}
+
+export async function replace(
+  req: Request<{ id: string }, unknown, ReplaceContactMessageInput>,
+  res: Response,
+) {
+  const message = await contactService.replaceContactMessage(req.params.id, req.body)
+  ok(res, message)
 }
 
 export async function updateStatus(

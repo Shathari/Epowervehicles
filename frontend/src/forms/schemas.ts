@@ -32,25 +32,6 @@ export const dealershipFormSchema = z.object({
 
 export type DealershipFormValues = z.infer<typeof dealershipFormSchema>
 
-export const loginFormSchema = z.object({
-  email: z.string().trim().email('Please enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-})
-
-export type LoginFormValues = z.infer<typeof loginFormSchema>
-
-export const productFormSchema = z.object({
-  name: z.string().trim().min(2, 'Name is required').max(120),
-  category: z.enum(['rickshaw', 'loader', 'dumper', 'scooty', 'cart', 'auto', 'custom']),
-  description: z.string().trim().min(10, 'Description must be at least 10 characters').max(1000),
-  imageUrl: z.string().trim().min(1, 'Image URL is required'),
-  specLine: z.string().trim().max(200).optional(),
-  order: z.number().int().min(0),
-  isActive: z.boolean(),
-})
-
-export type ProductFormValues = z.infer<typeof productFormSchema>
-
 export const SALES_EXPERIENCE_OPTIONS = [
   'Fresher (0-1 years)',
   '1-3 years',

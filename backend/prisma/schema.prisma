@@ -17,16 +17,23 @@ model User {
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  name        String
-  category    String
-  description String
-  imageUrl    String
-  specLine    String?
-  order       Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String   @id @default(cuid())
+  name           String
+  category       String
+  description    String
+  imageUrl       String?
+  specLine       String?
+  // Structured specs shown as separate stat boxes on the Featured Product section and product
+  // cards. Kept as flexible strings since units/labels vary by vehicle type (e.g. capacityText
+  // is "3 Passengers" for a rickshaw but "500 kg" for a loader or "60 km/h" for a scooter).
+  rangeText      String?
+  capacityText   String?
+  chargeTimeText String?
+  isFeatured     Boolean  @default(false)
+  order          Int      @default(0)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 // Singleton row — Home page stats band, managed by the admin.
@@ -36,6 +43,23 @@ model SiteStats {
   dealersCount  Int      @default(0)
   statesCovered Int      @default(0)
   updatedAt     DateTime @updatedAt
+}
+
+// Singleton row — About page content, managed by the admin.
+// coreValues/services hold JSON-encoded { title, description }[] arrays — a single
+// admin-edited content block, not independently queried/paginated data.
+model AboutContent {
+  id                  String   @id @default(cuid())
+  heroTitle           String   @default("")
+  heroSubtitle        String   @default("")
+  companyIntro        String   @default("")
+  missionText         String   @default("")
+  visionText          String   @default("")
+  coreValues          String   @default("[]")
+  servicesIntro       String   @default("")
+  services            String   @default("[]")
+  environmentalImpact String   @default("")
+  updatedAt           DateTime @updatedAt
 }
 
 model DealershipApplication {
@@ -59,4 +83,19 @@ model ContactMessage {
   status    String   @default("unread")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model SalesPartnerApplication {
+  id              String   @id @default(cuid())
+  fullName        String
+  whatsappNumber  String
+  email           String?
+  city            String
+  state           String
+  experience      String
+  previousCompany String?
+  aboutYourself   String?
+  status          String   @default("pending")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

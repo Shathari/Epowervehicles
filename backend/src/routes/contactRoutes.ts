@@ -5,6 +5,7 @@ import { requireRole } from '../middleware/requireRole.ts'
 import { validateBody } from '../middleware/validate.ts'
 import {
   createContactMessageSchema,
+  replaceContactMessageSchema,
   updateContactMessageSchema,
 } from '../validators/contactValidators.ts'
 import { submissionRateLimiter } from '../middleware/rateLimiter.ts'
@@ -17,6 +18,14 @@ contactRouter.post(
   submissionRateLimiter,
   validateBody(createContactMessageSchema),
   contactController.create,
+)
+contactRouter.get('/:id', authenticate, requireRole('ADMIN'), contactController.getById)
+contactRouter.put(
+  '/:id',
+  authenticate,
+  requireRole('ADMIN'),
+  validateBody(replaceContactMessageSchema),
+  contactController.replace,
 )
 contactRouter.patch(
   '/:id',

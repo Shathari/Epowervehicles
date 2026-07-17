@@ -8,7 +8,7 @@ export interface PublicUser {
   role: Role
 }
 
-function toPublicUser(user: { id: string; email: string; role: string }): PublicUser {
+export function toPublicUser(user: { id: string; email: string; role: string }): PublicUser {
   return { id: user.id, email: user.email, role: user.role as Role }
 }
 

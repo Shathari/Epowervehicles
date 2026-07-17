@@ -1,6 +1,6 @@
 import { RevealOnScroll } from '@/components/sections/RevealOnScroll'
 import { Section } from '@/components/sections/Section'
-import { GradientSection } from '@/components/sections/GradientSection'
+import { SectionGlow } from '@/components/sections/SectionGlow'
 import { DealershipForm } from '@/forms/DealershipForm'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 
@@ -14,17 +14,22 @@ export function Dealership() {
   )
 
   return (
-    <GradientSection theme="cta">
-      <div className="mx-auto max-w-4xl px-5 py-10">
+    <div>
+      <SectionGlow>
         <RevealOnScroll>
-          <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold text-neon-400">Become a Dealer</h1>
-            <p className="mt-2 text-slate-300">
+          <div className="px-5 py-16 text-center">
+            <p className="text-sm font-semibold uppercase tracking-wide text-neon-400">
+              Dealership
+            </p>
+            <h1 className="mt-2 text-3xl font-extrabold text-white sm:text-4xl">Become a Dealer</h1>
+            <p className="mx-auto mt-3 max-w-xl text-slate-300">
               Partner with us for a successful dealership experience with great benefits.
             </p>
           </div>
         </RevealOnScroll>
+      </SectionGlow>
 
+      <div className="mx-auto max-w-4xl px-5 py-10">
         <Section title="Why Choose Us?">
           <p>We offer extensive support, high-quality products, and exclusive dealer benefits.</p>
         </Section>
@@ -56,6 +61,6 @@ export function Dealership() {
           </p>
         </Section>
       </div>
-    </GradientSection>
+    </div>
   )
 }

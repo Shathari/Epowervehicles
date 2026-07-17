@@ -1,24 +1,31 @@
 import { RevealOnScroll } from '@/components/sections/RevealOnScroll'
 import { Section } from '@/components/sections/Section'
 import { InfoBox } from '@/components/sections/InfoBox'
-import { GradientSection } from '@/components/sections/GradientSection'
+import { SectionGlow } from '@/components/sections/SectionGlow'
 import { ContactForm } from '@/forms/ContactForm'
 import { WhatsAppButton } from '@/components/ui/WhatsAppButton'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 
 export function Contact() {
-  useDocumentTitle('Enquire / Chat', 'Get in touch with EPOWER Vehicles by form or WhatsApp.')
+  useDocumentTitle('Chat/Enquire', 'Get in touch with EPOWER Vehicles by form or WhatsApp.')
 
   return (
-    <GradientSection theme="cta">
-      <div className="mx-auto max-w-5xl px-5 py-10">
+    <div>
+      <SectionGlow>
         <RevealOnScroll>
-          <div className="mb-8 text-center">
-            <h1 className="text-2xl font-bold text-neon-400">Enquire / Chat</h1>
-            <p className="mt-2 text-slate-300">Reach us by form, or chat instantly on WhatsApp.</p>
+          <div className="px-5 py-16 text-center">
+            <p className="text-sm font-semibold uppercase tracking-wide text-neon-400">
+              Chat/Enquire
+            </p>
+            <h1 className="mt-2 text-3xl font-extrabold text-white sm:text-4xl">Get In Touch</h1>
+            <p className="mx-auto mt-3 max-w-xl text-slate-300">
+              Reach us by form, or chat instantly on WhatsApp.
+            </p>
           </div>
         </RevealOnScroll>
+      </SectionGlow>
 
+      <div className="mx-auto max-w-5xl px-5 py-10">
         <Section title="Our Contact Information">
           <div className="flex flex-wrap justify-between gap-4">
             <InfoBox title="Head Office">
@@ -65,6 +72,6 @@ export function Contact() {
           />
         </RevealOnScroll>
       </div>
-    </GradientSection>
+    </div>
   )
 }
