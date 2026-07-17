@@ -1,0 +1,12 @@
+node_modules
+dist
+*.log
+
+# Keep environment variables out of version control
+.env
+
+/src/generated/prisma
+
+# SQLite data file — migrations are committed, the data itself is not
+*.db
+*.db-journal

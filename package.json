@@ -1,0 +1,14 @@
+{
+  "name": "epowervehicles",
+  "private": true,
+  "version": "1.0.0",
+  "description": "EPOWER Vehicles Pvt Ltd — website (frontend) and API (backend)",
+  "workspaces": ["frontend", "backend"],
+  "scripts": {
+    "dev:frontend": "npm run dev --workspace frontend",
+    "dev:backend": "npm run dev --workspace backend",
+    "build:frontend": "npm run build --workspace frontend",
+    "typecheck": "npm run typecheck --workspace frontend && npm run typecheck --workspace backend",
+    "lint": "npm run lint --workspace frontend && npm run lint --workspace backend"
+  }
+}

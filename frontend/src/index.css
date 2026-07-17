@@ -1,0 +1,62 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Brand teal (from the original site's rgb(86,203,203)) */
+  --color-brand-teal-50: #eafbfa;
+  --color-brand-teal-100: #d0f3f0;
+  --color-brand-teal-300: #8ddcc9;
+  --color-brand-teal-400: #64dbc3;
+  --color-brand-teal-500: #56cbcb;
+  --color-brand-teal-600: #1f9d9d;
+  --color-brand-teal-700: #0d6e6e;
+  --color-brand-teal-800: #0a4f4f;
+
+  /* Brand navy/blue (from headers, feature blocks, value boxes) */
+  --color-brand-navy-500: #0088aa;
+  --color-brand-navy-600: #004466;
+  --color-brand-blue-500: #687eef;
+  --color-brand-blue-600: #2254be;
+
+  /* Neutral surfaces (still used by the admin panel, which keeps the light theme) */
+  --color-surface: #f4f4f4;
+  --color-surface-alt: #f9f9f9;
+  --color-surface-tint: #e0f7fa;
+
+  /* Dark/neon public-site theme */
+  --color-ink-950: #05070a;
+  --color-ink-900: #0a0f0d;
+  --color-ink-800: #121a16;
+  --color-ink-700: #1c2622;
+
+  --color-neon-400: #6dffa0;
+  --color-neon-500: #39ff6a;
+  --color-neon-600: #22c55e;
+
+  --font-sans: Arial, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-surface font-sans text-slate-800 antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-bold text-brand-teal-700;
+  }
+
+  a {
+    @apply text-brand-teal-700;
+  }
+
+  :focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-brand-teal-600;
+  }
+}
+
+@layer utilities {
+  .sr-only-focusable:not(:focus) {
+    @apply sr-only;
+  }
+}
