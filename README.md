@@ -15,7 +15,7 @@ This is an npm workspaces monorepo:
 ```
 epowervehicles/
 ├── frontend/   React 19 + TypeScript + Vite + Tailwind CSS v4 + Framer Motion — the public site
-├── backend/    Express + TypeScript + Prisma/SQLite — auth + full REST APIs for an external dashboard
+├── backend/    Express + TypeScript + Prisma/Postgres (Neon) — auth + full REST APIs for an external dashboard
 ├── docs/       API.md — endpoint reference (query params, pagination, deployment notes)
 └── .github/    GitHub Actions workflow that deploys frontend/ to GitHub Pages
 ```
@@ -68,7 +68,7 @@ upload/URL) swaps it in automatically, no code change.
 
 ```
 src/
-├── config/       zod-validated env, Prisma client (SQLite via better-sqlite3 adapter)
+├── config/       zod-validated env, Prisma client (Postgres via @prisma/adapter-pg)
 ├── controllers/  request/response glue — thin, delegate to services
 ├── services/     business logic + Prisma queries
 ├── middleware/   authenticate, requireRole, validate (zod), rateLimiter, errorHandler, upload (multer)
@@ -80,7 +80,7 @@ prisma/
 │                 SalesPartnerApplication / AboutContent
 └── seed.ts       admin user, 7 starter products (one per category, marked E-Rickshaw as featured),
                   starter SiteStats/About content matching the design reference
-uploads/          admin-uploaded product images (gitignored — runtime data, like dev.db)
+uploads/          admin-uploaded product images (gitignored runtime data)
 ```
 
 See [`docs/API.md`](docs/API.md) for the full endpoint + query-parameter reference. Products,
@@ -92,8 +92,8 @@ on their list endpoints — built for an external dashboard to consume directly.
 
 ```bash
 npm install                       # installs both workspaces
-cp backend/.env.example backend/.env   # then fill in JWT secrets + ADMIN_PASSWORD
-npm run --workspace backend prisma:migrate  # creates backend/dev.db
+cp backend/.env.example backend/.env   # then fill in DATABASE_URL, JWT secrets + ADMIN_PASSWORD
+npm run --workspace backend prisma:migrate  # applies migrations to your Postgres database
 npm run --workspace backend seed            # admin user + starter products/content
 
 npm run dev:backend               # http://localhost:4000
@@ -114,3 +114,34 @@ log in with via `POST /api/auth/login` — there's no login page in this repo.
 The frontend auto-deploys to GitHub Pages on push to `main` (see `.github/workflows/deploy.yml`).
 The backend is not auto-deployed — see [`docs/API.md`](docs/API.md#deployment) for the one-time
 GitHub Pages setting change needed and backend hosting notes.
+
+### Deployment environment variables
+
+The backend validates all of these at startup (`backend/src/config/env.ts`, via Zod) and refuses
+to boot with a clear error if a required one is missing or invalid — see `backend/.env.example`
+for placeholder values. On a platform like Render, set these as real environment variables in the
+service's dashboard; do **not** upload or bake in a `.env` file (the Dockerfile's `.dockerignore`
+excludes it from the build on purpose).
+
+| Variable                   | Required?             | Purpose                                                                 |
+| --------------------------- | ---------------------- | ------------------------------------------------------------------------- |
+| `NODE_ENV`                  | No (default `development`) | `development` \| `test` \| `production` |
+| `PORT`                      | No (default `4000`)   | Port the Express server listens on |
+| `CORS_ORIGIN`               | **Yes**                | Origin allowed to call the API with credentials — the deployed frontend's URL in production |
+| `DATABASE_URL`              | **Yes**                | Postgres connection string (Neon in production, or any Postgres for local dev) |
+| `JWT_ACCESS_SECRET`         | **Yes**                | Signs short-lived JWT access tokens. Long, random, unique — e.g. `openssl rand -hex 32` |
+| `JWT_REFRESH_SECRET`        | **Yes**                | Signs the httpOnly rotating refresh cookie. Must differ from `JWT_ACCESS_SECRET` |
+| `ACCESS_TOKEN_TTL_MINUTES`  | No (default `15`)     | Access token lifetime, in minutes |
+| `REFRESH_TOKEN_TTL_DAYS`    | No (default `7`)      | Refresh cookie lifetime, in days |
+| `ADMIN_EMAIL`               | **Yes**                | Email of the first admin user, created once by `prisma/seed.ts` |
+| `ADMIN_PASSWORD`            | **Yes**                | Password of that first admin user (min. 8 characters) — change it after first login |
+| `SMTP_HOST`                 | No                     | SMTP server host for new-submission notification emails |
+| `SMTP_PORT`                 | No (default `587`)    | SMTP server port |
+| `SMTP_USER`                 | No                     | SMTP auth username |
+| `SMTP_PASS`                 | No                     | SMTP auth password |
+| `SMTP_FROM`                 | No                     | "From" address for notification emails |
+| `NOTIFY_TO_EMAIL`           | No                     | Address that receives new contact/dealership/sales-partner notification emails |
+
+The six `SMTP_*`/`NOTIFY_TO_EMAIL` variables are entirely optional and independent of each other's
+requiredness — leaving all of them unset simply disables email notifications
+(`isSmtpConfigured` in `env.ts` becomes `false`); every other feature works normally without them.

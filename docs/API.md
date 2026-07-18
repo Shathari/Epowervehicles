@@ -159,12 +159,13 @@ it is hardcoded in the frontend.
 
 ## Database
 
-Local dev uses SQLite (`backend/dev.db`, via Prisma + `@prisma/adapter-better-sqlite3`) so there's
-nothing to provision to get started. For production, swap `datasource.provider` in
-`backend/prisma/schema.prisma` to `postgresql`, set `DATABASE_URL` to a Postgres connection
-string, and replace the `PrismaBetterSqlite3` adapter in `backend/src/config/prisma.ts` with
-`@prisma/adapter-pg` (or your driver of choice) — the rest of the code (services, controllers,
-routes) is unaffected since it only talks to the Prisma client, not the database directly.
+Postgres (hosted on [Neon](https://neon.tech)) in every environment, via Prisma's
+`@prisma/adapter-pg` driver adapter (`backend/src/config/prisma.ts`) — Prisma 7's generated client
+always requires an explicit driver adapter, there's no adapter-less fallback for any provider.
+`DATABASE_URL` is Neon's pooled connection string (the `-pooler` host, works fine with the
+standard `pg` driver over PgBouncer). To point at a different Postgres host, just change
+`DATABASE_URL`; the datasource provider and adapter don't need to change since any standard
+Postgres connection string works the same way.
 
 ## Deployment
 

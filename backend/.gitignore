@@ -7,7 +7,7 @@ dist
 
 /src/generated/prisma
 
-# SQLite data file — migrations are committed, the data itself is not
+# Stray local database files (this app uses Postgres, but guard against accidental local artifacts)
 *.db
 *.db-journal
 
