@@ -23,6 +23,13 @@ const envSchema = z.object({
   ADMIN_EMAIL: z.string().min(1, 'ADMIN_EMAIL is required').email('ADMIN_EMAIL must be a valid email address'),
   ADMIN_PASSWORD: z.string().min(8, 'ADMIN_PASSWORD must be at least 8 characters'),
 
+  // --- Optional: env-defined admin login (authService.ts) — a bcrypt hash of the admin
+  // password. When set, ADMIN_EMAIL authenticates as a virtual admin against this hash instead
+  // of the users table, so login works even with an empty/missing users table. Generate with
+  // `node -e "console.log(require('bcryptjs').hashSync('yourPassword', 12))"`. Leave unset to
+  // rely on the Prisma-seeded user only (existing behavior).
+  ADMIN_PASSWORD_HASH: z.string().optional(),
+
   // --- Optional: SMTP notification email on new contact/dealership/sales-partner submissions.
   // Leave every one of these unset to disable notifications entirely — the app works fine
   // without them (see isSmtpConfigured below). ---
