@@ -8,6 +8,13 @@ import { updateAboutSchema } from '../validators/aboutValidators.ts'
 export const aboutRouter = Router()
 
 aboutRouter.get('/', aboutController.get)
+aboutRouter.post(
+  '/',
+  authenticate,
+  requireRole('ADMIN'),
+  validateBody(updateAboutSchema),
+  aboutController.update,
+)
 aboutRouter.patch(
   '/',
   authenticate,

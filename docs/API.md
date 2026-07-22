@@ -145,6 +145,7 @@ Covered" figures.
 | Method | Path     | Auth  | Description                                                    |
 | ------ | -------- | ----- | ------------------------------------------------------------------ |
 | GET    | `/stats` | none  | Returns `{ id, vehiclesSold, dealersCount, statesCovered, updatedAt }` |
+| POST   | `/stats` | ADMIN | Same as PATCH below — creates the row on first call, updates it thereafter |
 | PATCH  | `/stats` | ADMIN | Update any subset of `{ vehiclesSold, dealersCount, statesCovered }` |
 
 ## About page content
@@ -155,6 +156,7 @@ it is hardcoded in the frontend.
 | Method | Path      | Auth  | Description                                                    |
 | ------ | --------- | ----- | ------------------------------------------------------------------ |
 | GET    | `/about`  | none  | Returns `{ id, heroTitle, heroSubtitle, companyIntro, missionText, visionText, coreValues, servicesIntro, services, environmentalImpact, updatedAt }` — `coreValues`/`services` are arrays of `{ title, description }` |
+| POST   | `/about`  | ADMIN | Same as PATCH below — creates the row on first call, updates it thereafter |
 | PATCH  | `/about`  | ADMIN | Update any subset of the same fields |
 
 ## Database

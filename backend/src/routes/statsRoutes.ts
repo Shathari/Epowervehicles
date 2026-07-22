@@ -8,6 +8,13 @@ import { updateStatsSchema } from '../validators/statsValidators.ts'
 export const statsRouter = Router()
 
 statsRouter.get('/', statsController.get)
+statsRouter.post(
+  '/',
+  authenticate,
+  requireRole('ADMIN'),
+  validateBody(updateStatsSchema),
+  statsController.update,
+)
 statsRouter.patch(
   '/',
   authenticate,
