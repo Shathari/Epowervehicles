@@ -10,6 +10,14 @@ async function seedAdminUser() {
     return
   }
 
+  if (!env.ADMIN_PASSWORD) {
+    throw new Error(
+      'ADMIN_PASSWORD is required to seed the initial admin user. Set it in backend/.env or your ' +
+        'deployment platform, or skip seeding if you only intend to use the env-admin ' +
+        '(ADMIN_EMAIL + ADMIN_PASSWORD_HASH).',
+    )
+  }
+
   const passwordHash = await bcrypt.hash(env.ADMIN_PASSWORD, 12)
   await prisma.user.create({
     data: { email: env.ADMIN_EMAIL, passwordHash, role: 'ADMIN' },

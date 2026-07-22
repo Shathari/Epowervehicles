@@ -8,6 +8,7 @@ import { logger } from './utils/logger.ts'
 import { apiRouter } from './routes/index.ts'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.ts'
 import { UPLOADS_DIR } from './middleware/upload.ts'
+import fs from 'node:fs'
 
 export const app = express()
 
@@ -36,6 +37,8 @@ app.use(
   },
   express.static(UPLOADS_DIR),
 )
+console.log('UPLOADS_DIR =', UPLOADS_DIR)
+console.log('Uploads exists:', fs.existsSync(UPLOADS_DIR))
 
 app.use('/api', apiRouter)
 

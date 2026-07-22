@@ -19,9 +19,17 @@ const envSchema = z.object({
   ACCESS_TOKEN_TTL_MINUTES: z.coerce.number().int().positive().default(15),
   REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().positive().default(7),
 
-  // --- First-time admin account (prisma/seed.ts) — required to seed the initial ADMIN user ---
-  ADMIN_EMAIL: z.string().min(1, 'ADMIN_EMAIL is required').email('ADMIN_EMAIL must be a valid email address'),
-  ADMIN_PASSWORD: z.string().min(8, 'ADMIN_PASSWORD must be at least 8 characters'),
+  // --- Admin account ---
+  // ADMIN_EMAIL is required in every environment — it's the identity for both the virtual
+  // env-admin (authService.ts, via ADMIN_PASSWORD_HASH below) and the Prisma-seeded admin row.
+  ADMIN_EMAIL: z
+    .string()
+    .min(1, 'ADMIN_EMAIL is required')
+    .email('ADMIN_EMAIL must be a valid email address'),
+  // Plaintext password used only by `prisma/seed.ts` to create the initial ADMIN row. Optional
+  // here so app startup doesn't require it when only the env-admin (ADMIN_PASSWORD_HASH) is in
+  // use; seed.ts validates its own presence at seed time since only seeding needs it.
+  ADMIN_PASSWORD: z.string().optional(),
 
   // --- Optional: env-defined admin login (authService.ts) — a bcrypt hash of the admin
   // password. When set, ADMIN_EMAIL authenticates as a virtual admin against this hash instead
@@ -45,7 +53,9 @@ const parsed = envSchema.safeParse(process.env)
 
 if (!parsed.success) {
   const fieldErrors = parsed.error.flatten().fieldErrors
-  console.error('Invalid environment configuration — the following variables are missing or invalid:')
+  console.error(
+    'Invalid environment configuration — the following variables are missing or invalid:',
+  )
   console.error(fieldErrors)
   console.error(
     'Set them in your deployment platform (e.g. Render → Environment) or in backend/.env locally. ' +
