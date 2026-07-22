@@ -38,8 +38,11 @@ app.use(
   express.static(UPLOADS_DIR),
 )
 console.log('UPLOADS_DIR =', UPLOADS_DIR)
-console.log('Uploads exists:', fs.existsSync(UPLOADS_DIR))
-console.log('Image path =', imagePath)
+console.log('Uploads exists =', fs.existsSync(UPLOADS_DIR))
+
+if (fs.existsSync(UPLOADS_DIR)) {
+  console.log('Contents:', fs.readdirSync(UPLOADS_DIR))
+}
 
 app.use('/api', apiRouter)
 
