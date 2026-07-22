@@ -39,6 +39,7 @@ app.use(
 )
 console.log('UPLOADS_DIR =', UPLOADS_DIR)
 console.log('Uploads exists:', fs.existsSync(UPLOADS_DIR))
+console.log('Image path =', imagePath)
 
 app.use('/api', apiRouter)
 
