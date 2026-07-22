@@ -29,4 +29,44 @@ export const uploadImage = multer({
   },
 })
 
+// Dedicated multer instance for the dashboard sync upload endpoint (POST /api/public/admin/uploads)
+// — a wider format allow-list (adds JPG/GIF) and a larger size cap than the product upload above,
+// kept separate so it can't change behavior for existing callers of `uploadImage`.
+const PUBLIC_ADMIN_ALLOWED_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+])
+
+const PUBLIC_ADMIN_MIME_EXTENSIONS: Record<string, string> = {
+  'image/jpeg': '.jpg',
+  'image/jpg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+  'image/gif': '.gif',
+}
+
+const publicAdminStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, UPLOADS_DIR),
+  filename: (_req, file, cb) => {
+    const ext =
+      PUBLIC_ADMIN_MIME_EXTENSIONS[file.mimetype] ?? path.extname(file.originalname).toLowerCase()
+    cb(null, `${crypto.randomUUID()}${ext}`)
+  },
+})
+
+export const uploadPublicImage = multer({
+  storage: publicAdminStorage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (!PUBLIC_ADMIN_ALLOWED_MIME_TYPES.has(file.mimetype)) {
+      cb(AppError.badRequest('Only JPG, JPEG, PNG, WebP, and GIF images are allowed.'))
+      return
+    }
+    cb(null, true)
+  },
+})
+
 export { UPLOADS_DIR }
